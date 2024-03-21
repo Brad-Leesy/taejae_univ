@@ -1,0 +1,4 @@
+celsius_str = input("섭씨온도를 입력해주세요")
+celsius = float(celsius_str)
+fahrenheit = celsius*9/5+32
+print("화씨 온도는:", fahrenheit)
