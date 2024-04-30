@@ -1,0 +1,21 @@
+def fibonacci(n):
+    # 기저 사례: n이 0이거나 1일 때는 각각 0과 1을 반환합니다.
+    if n == 0:
+        return 0
+    elif n == 1:
+        return 1
+    # 재귀 호출: n-1번째 항과 n-2번째 항의 합을 반환합니다.
+    else:
+        return fibonacci(n-1) + fibonacci(n-2)
+
+# 사용자로부터 입력을 받아서 피보나치 항을 출력합니다.
+while True:
+    try:
+        n = int(input("출력할 피보나치 항을 입력하세요 (음수를 입력하면 종료): "))
+        if n < 0:
+            print("프로그램을 종료합니다.")
+            break
+        fib_number = fibonacci(n)
+        print("피보나치 수열의 {}번째 항: {}".format(n, fib_number))
+    except ValueError:
+        print("올바른 숫자를 입력하세요.")
