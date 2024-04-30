@@ -1,0 +1,42 @@
+import random
+
+def roll_dice():
+    # 주사위를 굴려 랜덤한 값을 반환합니다.
+    return random.randint(1, 6)
+
+def main():
+    while True:
+        # 플레이어 수를 입력 받습니다.
+        num_players = int(input("플레이어 수를 입력하세요: "))
+        
+        # 각 플레이어의 이름을 입력 받고, 점수를 저장할 딕셔너리를 생성합니다.
+        players = {}
+        for i in range(num_players):
+            player_name = input("플레이어 {}의 이름을 입력하세요: ".format(i+1))
+            players[player_name] = 0
+        
+        # 각 플레이어가 주사위를 한 번씩 굴려서 점수를 기록합니다.
+        for player in players:
+            input("{}님의 차례입니다. 주사위를 굴려주세요. (Enter를 누르세요)".format(player))
+            dice_roll = roll_dice()
+            players[player] = dice_roll
+            print("{}님의 주사위 숫자는 {}입니다.".format(player, dice_roll))
+        
+        # 각 플레이어의 점수를 출력합니다.
+        print("\n--- 각 플레이어의 점수 ---")
+        for player, score in players.items():
+            print("{}: {}".format(player, score))
+        
+        # 가장 높은 점수를 획득한 플레이어를 찾아 출력합니다.
+        max_score = max(players.values())
+        winners = [player for player, score in players.items() if score == max_score]
+        print("\n가장 높은 점수를 획득한 플레이어는 {}이고, 점수는 {}입니다.".format(", ".join(winners), max_score))
+        
+        # 게임 종료 여부를 묻습니다.
+        restart = input("게임을 다시 시작하시겠습니까? (y/n): ")
+        if restart.lower() != 'y':
+            print("게임을 종료합니다.")
+            break
+
+if __name__ == "__main__":
+    main()
