@@ -1,8 +1,7 @@
 import streamlit as st
-import openai
+from openai import OpenAI
 
-
-openai.api_key = ''
+client = OpenAI(api_key="")
 
 st.title("감정 기반 음악/ 영화 추천 서비스")
 
@@ -19,23 +18,34 @@ with col2:
 
 
 if mood:
-    # ChatGPT에 질문하기
-    prompt = f"기분이 '{mood}'일 때 어울리는 음악과 영화를 추천해줘."
-    response = openai.Completion.create(
-        engine="gpt-3.5-turbo"
+    prompt = f"기분이 '{mood}'일 때 어울리는 음악과 영화를 YouTube 링크 형식으로 각각 하나씩 추천해줘. st.video 기능을 사용해서 embded하는 게 목적이니까 그에 맞는 결과값으로 대답해줘."
+    response = client.completions.create(
+        model="gpt-3.5-turbo-instruct",
         prompt=prompt,
         max_tokens=150,
         temperature=0.7
     )
 
-
     if response.choices and response.choices[0]:
-        recommendation = response.choices[0].text.strip().split('\n')
-        if len(recommendation) >= 2:
-            music_recommendation = recommendation[0].replace("음악 추천: ", "").strip()
-            movie_recommendation = recommendation[1].replace("영화 추천: ", "").strip()
+        response_text = response.choices[0].text.strip()
+        st.write("Response Text:", response_text)
 
 
+        music_recommendation = ""
+        movie_recommendation = ""
+
+        lines = response_text.split('\n')
+        for i, line in enumerate(lines):
+            if "https://www.youtube.com" in line:
+                if not music_recommendation and i > 0 and ("음악" in lines[i - 1] or "음악 추천" in lines[i - 1]):
+                    music_recommendation = line.strip()
+                elif not movie_recommendation and i > 0 and ("영화" in lines[i - 1] or "영화 추천" in lines[i - 1]):
+                    movie_recommendation = line.strip()
+                if music_recommendation and movie_recommendation:
+                    break
+
+
+        if "youtube.com" in music_recommendation and "youtube.com" in movie_recommendation:
             with upper_col:
                 st.subheader("Recommended Music")
                 st.video(music_recommendation)
@@ -44,6 +54,7 @@ if mood:
                 st.subheader("Recommended Movie")
                 st.video(movie_recommendation)
         else:
-            st.error("Not enough recommendations returned.")
-    else:
-        st.error("Failed to get recommendations.")
+            if "youtube.com" not in music_recommendation:
+                st.error("Failed to get a valid music recommendation.")
+            if "youtube.com" not in movie_recommendation:
+                st.error("Failed to get a valid movie recommendation.")
